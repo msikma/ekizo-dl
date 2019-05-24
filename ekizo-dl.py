@@ -79,6 +79,10 @@ def report_dl(url, search, id, result):
     print('Could not download item: {id}; search: {search}'.format(id=id, search=search))
 
 
+def report_search(url, search, urls):
+  print('Searched keyword: {search}; items found: {items}'.format(search=search, items=len(urls)))
+
+
 def get_url_id(url):
   id = re.search(r'index=(.+?)$', url)
   id = id.group(1) if id else None
@@ -104,6 +108,8 @@ def main():
     base = get_url_base(url)
     html = urllib.request.urlopen(url).read().decode('utf-8')
     urls = fetch_links(html, base)
+    report_search(url, search, urls)
+    time.sleep(5)
     
     for url in urls:
       # Check if we've already downloaded this link before.
