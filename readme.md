@@ -6,8 +6,8 @@ Make a JSON file at `~/.config/ekizo-dl/searches.json`:
 
 ```json
 {
-  searches: ['ポケットモンスター', 'ルパン三世'],
-  target: '~/Pictures/Cron'
+  "searches": ["ポケットモンスター", "ロックマン"],
+  "target": "~/Pictures/Cron"
 }
 ```
 
