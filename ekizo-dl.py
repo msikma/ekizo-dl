@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 
 import os
+import sys
 import re
 import subprocess
 import urllib.request
 import time
 import json
 import urllib.parse
+from pprint import pprint
 
 
 def mandarake_search_url(search):
@@ -46,11 +48,21 @@ def get_cache():
 
 
 def fetch_links(html, base):
-  regex = r"<a\s+id\s*=\s*\"goItemInfo\"\s+href\s*=\s*\"(.+?)\".+?>"
-  matches = re.finditer(regex, html, re.MULTILINE)
+  items_re = re.compile(r'<!-- 商品情報のリスト -->(.*?)<!-- /id="aucItems" -->', re.MULTILINE | re.DOTALL)
+  items = [m.group(1) for m in items_re.finditer(html)][0]
+  
+  blocks_re = re.compile(r'<div class="block">', re.MULTILINE | re.DOTALL)
+  blocks = blocks_re.split(items)
+
   links = []
-  for match in matches:
-    links.append(base + match.group(1))
+  links_re = re.compile(r"<a\s+id\s*=\s*\"goItemInfo\"\s+href\s*=\s*\"(.+?)\".+?>")
+  for block in blocks:
+    if not '<span id="name">セル画' in block:
+      continue
+    block_links = [m.group(1) for m in links_re.finditer(block)]
+    for link in block_links:
+      links.append(base + link)
+  
   return links
 
 
