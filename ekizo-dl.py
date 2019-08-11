@@ -57,7 +57,7 @@ def fetch_links(html, base):
   links = []
   links_re = re.compile(r"<a\s+id\s*=\s*\"goItemInfo\"\s+href\s*=\s*\"(.+?)\".+?>")
   for block in blocks:
-    if not '<span id="name">セル画' in block:
+    if not '>セル画<' in block:
       continue
     block_links = [m.group(1) for m in links_re.finditer(block)]
     for link in block_links:
