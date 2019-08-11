@@ -91,8 +91,9 @@ def report_dl(url, search, id, result):
     print('Could not download item: {id}; search: {search}'.format(id=id, search=search))
 
 
-def report_search(url, search, urls):
-  print('Searched keyword: {search}; items found: {items}'.format(search=search, items=len(urls)))
+def report_search(url, search, urls, utilized_urls):
+  print('Searched keyword: {search} - items found: {items}, new items: {utilized_urls}'.format(search=search, items=len(urls), utilized_urls=utilized_urls))
+  print('URL: {url}'.format(url=url))
 
 
 def get_url_id(url):
@@ -116,23 +117,26 @@ def main():
   target = search_data['target']
   ensure_dir(target)
   for search in search_data['searches']:
+    time.sleep(5)
     url = mandarake_search_url(search)
     base = get_url_base(url)
     html = urllib.request.urlopen(url).read().decode('utf-8')
     urls = fetch_links(html, base)
-    report_search(url, search, urls)
-    time.sleep(5)
+    utilized_urls = 0
     
     for url in urls:
+      time.sleep(5)
       # Check if we've already downloaded this link before.
       has_cache = check_cache(cache, url)
       if has_cache: continue
       id = get_url_id(url)
       result = download_url(url, search, id, target)
       report_dl(url, search, id, result)
-      if not result: continue
       cache = add_to_cache(cache, url, search)
-      time.sleep(5)
+      if not result: continue
+      utilized_urls += 1
+    
+    report_search(url, search, urls, utilized_urls)
 
 if __name__ == "__main__":
   main()
